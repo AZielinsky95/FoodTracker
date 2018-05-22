@@ -10,61 +10,63 @@ import Foundation
 import UIKit
 import os.log
 
-class Meal : NSObject, NSCoding {
-    //MARK: Properties
-    struct PropertyKey {
-        static let name = "name"
-        static let photo = "photo"
-        static let rating = "rating"
-    }
-    
+class Meal : NSObject {
+
     var name: String
+    var mealDescription : String
+    var calories: Int
     var photo: UIImage?
-    var rating: Int
+    var photoURL : String?
+    var rating: Int?
+    var mealID: String? = nil;
     
     static let DocumentsDirectory = FileManager().urls(for: .documentDirectory, in: .userDomainMask).first!
     static let ArchiveURL = DocumentsDirectory.appendingPathComponent("meals")
     
-    func encode(with aCoder: NSCoder) {
-        aCoder.encode(name, forKey: PropertyKey.name)
-        aCoder.encode(photo, forKey: PropertyKey.photo)
-        aCoder.encode(rating, forKey: PropertyKey.rating)
+    convenience init?(dict:[String:Any])
+    {
+        let title = dict["title"] as! String
+        let calories = dict["calories"] as! Int
+        let desc = dict["description"] as! String
+        let rating = dict["rating"] as? Int
+        let imageURL = dict["imagePath"] as? String
+        
+        self.init(name: title,photo:nil,photoURLString: imageURL, rating: rating, calories: calories, description: desc)
     }
+//
+//    if let url = imageURL
+//        {
+//            RequestController.downloadImage(url: url as! URL) { [weak self] (image) in
+//
+//                if let p = image
+//                {
+//                    mealPhoto = p
+//                }
+//            }
+//    }
     
-    required convenience init?(coder aDecoder: NSCoder) {
-        
-        // The name is required. If we cannot decode a name string, the initializer should fail.
-        guard let name = aDecoder.decodeObject(forKey: PropertyKey.name) as? String else {
-            os_log("Unable to decode the name for a Meal object.", log: OSLog.default, type: .debug)
-            return nil
-        }
-        
-        // Because photo is an optional property of Meal, just use conditional cast.
-        let photo = aDecoder.decodeObject(forKey: PropertyKey.photo) as? UIImage
-        
-        let rating = aDecoder.decodeInteger(forKey: PropertyKey.rating)
-        
-        // Must call designated initializer.
-        self.init(name: name, photo: photo, rating: rating)
-        
-    }
-    
-    init?(name: String, photo: UIImage?, rating: Int) {
+    init?(name: String,photo: UIImage?,photoURLString: String?, rating: Int?,calories:Int,description:String)
+    {
         
         guard !name.isEmpty else {
             return nil
         }
         
         // The rating must be between 0 and 5 inclusively
-        guard (rating >= 0) && (rating <= 5) else {
-            return nil
+       if let r = rating
+       {
+            guard (r >= 0) && (r <= 5) else {
+                return nil
+            }
         }
         
         // Initialize stored properties.
         self.name = name
         self.photo = photo
+        self.photoURL = photoURLString;
         self.rating = rating
-        
+        self.mealDescription = description;
+        self.calories = calories;
     }
     
     

@@ -11,15 +11,16 @@ import os.log
 
 class MealViewController: UIViewController, UITextFieldDelegate,UIImagePickerControllerDelegate, UINavigationControllerDelegate {
 
+    @IBOutlet weak var caloriesTextField: UITextField!
+    @IBOutlet weak var mealDescriptionTextField: UITextField!
     @IBOutlet weak var ratingControl: RatingControl!
     @IBOutlet weak var photoImageView: UIImageView!
     @IBOutlet weak var mealNameTextField: UITextField!
-    
+        @IBOutlet weak var saveButton: UIBarButtonItem!
     
     var meal: Meal?
-
-    @IBOutlet weak var saveButton: UIBarButtonItem!
     
+
     @IBAction func cancel(_ sender: UIBarButtonItem){
         // Depending on style of presentation (modal or push presentation), this view controller needs to be dismissed in two different ways.
         let isPresentingInAddMealMode = presentingViewController is UINavigationController
@@ -35,6 +36,28 @@ class MealViewController: UIViewController, UITextFieldDelegate,UIImagePickerCon
         }
     }
     
+    @IBAction func saveTapped(_ sender: UIBarButtonItem)
+    {
+      //
+        let name = mealNameTextField.text ?? ""
+        let photo = photoImageView.image
+        let rating = ratingControl.rating
+        let calories = Int(caloriesTextField.text!)
+        let desc = mealDescriptionTextField.text!
+        
+        
+        meal = Meal(name: name,photo: photo, photoURLString: nil, rating: rating, calories: calories!, description: desc)
+        
+        RequestController.uploadMeal(meal: meal!)
+        {
+            DispatchQueue.main.async()
+            {
+                self.performSegue(withIdentifier: "unwind", sender: self);
+            }
+        }
+    }
+    
+    
     // This method lets you configure a view controller before it's presented.
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         
@@ -43,11 +66,14 @@ class MealViewController: UIViewController, UITextFieldDelegate,UIImagePickerCon
             return
         }
         
-        let name = mealNameTextField.text ?? ""
-        let photo = photoImageView.image
-        let rating = ratingControl.rating
-        
-        meal = Meal(name: name, photo: photo, rating: rating)
+//        let name = mealNameTextField.text ?? ""
+//        let photo = photoImageView.image
+//        let rating = ratingControl.rating
+//        let calories = Int(caloriesTextField.text!)
+//        let desc = mealDescriptionTextField.text!
+//
+//
+//        meal = Meal(name: name,photo: photo, photoURLString: nil, rating: rating, calories: calories!, description: desc)
         
     }
     
@@ -61,7 +87,14 @@ class MealViewController: UIViewController, UITextFieldDelegate,UIImagePickerCon
             navigationItem.title = meal.name
             mealNameTextField.text   = meal.name
             photoImageView.image = meal.photo
-            ratingControl.rating = meal.rating
+            if let r = meal.rating
+            {
+            ratingControl.rating = r
+            }
+            else
+            {
+            ratingControl.rating = 0;
+            }
         }
         
         // Enable the Save button only if the text field has a valid Meal name.

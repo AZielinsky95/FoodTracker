@@ -11,27 +11,17 @@ import os.log
 
 class MealTableViewController: UITableViewController {
 
-    
     var meals = [Meal]()
 
+    override func viewDidAppear(_ animated: Bool)
+    {
+        super.viewDidAppear(true)
+        
+   //    UserDefaults.ke
+        
+    }
     //MARK: Actions
-    
-    private func saveMeals() {
-        
-        let isSuccessfulSave = NSKeyedArchiver.archiveRootObject(meals, toFile: Meal.ArchiveURL.path)
-        
-        if isSuccessfulSave {
-            os_log("Meals successfully saved.", log: OSLog.default, type: .debug)
-        } else {
-            os_log("Failed to save meals...", log: OSLog.default, type: .error)
-        }
-        
-    }
-    
-    private func loadMeals() -> [Meal]?  {
-        return NSKeyedUnarchiver.unarchiveObject(withFile: Meal.ArchiveURL.path) as? [Meal]
-    }
-    
+
     @IBAction func unwindToMealList(sender: UIStoryboardSegue)
     {
         if let sourceViewController = sender.source as? MealViewController, let meal = sourceViewController.meal {
@@ -48,8 +38,6 @@ class MealTableViewController: UITableViewController {
                 meals.append(meal)
                 tableView.insertRows(at: [newIndexPath], with: .automatic)
             }
-
-            saveMeals()
         }
     }
     
@@ -57,14 +45,22 @@ class MealTableViewController: UITableViewController {
         super.viewDidLoad()
 
         navigationItem.leftBarButtonItem = editButtonItem
-        
-        if let savedMeals = loadMeals() {
-            meals += savedMeals
-        }
-        else {
-            // Load the sample data.
-            loadSampleMeals()
-        }
+     
+//        RequestController.login(username: "hanzolo", password: "1234") {
+//
+            RequestController.getMeals { (meals) in
+                
+                for meal in meals!
+                {
+                    self.meals.append(meal)
+                }
+                
+                DispatchQueue.main.async() {
+                    self.tableView.reloadData()
+                }
+            }
+            
+      //  }
     }
 
     // MARK: - Table view data source
@@ -73,7 +69,7 @@ class MealTableViewController: UITableViewController {
         if editingStyle == .delete {
             // Delete the row from the data source
             meals.remove(at: indexPath.row)
-            saveMeals()
+
             tableView.deleteRows(at: [indexPath], with: .fade)
         } else if editingStyle == .insert {
             // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
@@ -103,31 +99,41 @@ class MealTableViewController: UITableViewController {
         let meal = meals[indexPath.row]
         
         cell.nameLabel.text = meal.name
-        cell.photoImage.image = meal.photo
-        cell.ratingControl.rating = meal.rating
         
+        if let mealImage = meal.photo
+        {
+            cell.photoImage.image = mealImage;
+        }
+        else
+        {
+            if let photoURL = meal.photoURL
+            {
+                let url = URL(string: photoURL)
+                RequestController.downloadImage(url: url!) { (image) in
+
+                    if let p = image
+                    {
+                        meal.photo = p
+                        cell.photoImage.image = p;
+                    }
+                    else
+                    {
+                        print("Image returned nil during download");
+                    }
+                }
+            }
+        }
+        
+        if let rating = meal.rating
+        {
+           cell.ratingControl.rating = rating
+        }
+        else
+        {
+            cell.ratingControl.rating = 0;
+        }
+     
         return cell
-    }
-    
-    private func loadSampleMeals() {
-        
-        let photo1 = UIImage(named: "meal1")
-        let photo2 = UIImage(named: "meal2")
-        let photo3 = UIImage(named: "meal3")
-        
-        guard let meal1 = Meal(name: "Caprese Salad", photo: photo1, rating: 4) else {
-            fatalError("Unable to instantiate meal1")
-        }
-        
-        guard let meal2 = Meal(name: "Chicken and Potatoes", photo: photo2, rating: 5) else {
-            fatalError("Unable to instantiate meal2")
-        }
-        
-        guard let meal3 = Meal(name: "Pasta with Meatballs", photo: photo3, rating: 3) else {
-            fatalError("Unable to instantiate meal2")
-        }
-        
-        meals += [meal1, meal2, meal3]
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?)

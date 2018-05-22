@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		CA2776CD20B31F9400219410 /* SignUpViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA2776CC20B31F9400219410 /* SignUpViewController.swift */; };
+		CA2776CF20B3220F00219410 /* RequestController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA2776CE20B3220F00219410 /* RequestController.swift */; };
 		CA88899F20AF1D9F006B8FE4 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA88899E20AF1D9F006B8FE4 /* AppDelegate.swift */; };
 		CA8889A120AF1D9F006B8FE4 /* MealViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA8889A020AF1D9F006B8FE4 /* MealViewController.swift */; };
 		CA8889A420AF1D9F006B8FE4 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CA8889A220AF1D9F006B8FE4 /* Main.storyboard */; };
@@ -35,6 +37,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		CA2776CC20B31F9400219410 /* SignUpViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignUpViewController.swift; sourceTree = "<group>"; };
+		CA2776CE20B3220F00219410 /* RequestController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RequestController.swift; sourceTree = "<group>"; };
 		CA88899B20AF1D9F006B8FE4 /* FoodTracker.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FoodTracker.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		CA88899E20AF1D9F006B8FE4 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		CA8889A020AF1D9F006B8FE4 /* MealViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MealViewController.swift; sourceTree = "<group>"; };
@@ -110,6 +114,8 @@
 				CA8889AA20AF1DA1006B8FE4 /* LaunchScreen.storyboard */,
 				CA8889AD20AF1DA1006B8FE4 /* Info.plist */,
 				CA8889A520AF1D9F006B8FE4 /* FoodTracker.xcdatamodeld */,
+				CA2776CC20B31F9400219410 /* SignUpViewController.swift */,
+				CA2776CE20B3220F00219410 /* RequestController.swift */,
 			);
 			path = FoodTracker;
 			sourceTree = "<group>";
@@ -228,8 +234,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CA2776CF20B3220F00219410 /* RequestController.swift in Sources */,
 				CA8889D020AF3166006B8FE4 /* MealCell.swift in Sources */,
 				CA8889C020AF2EF4006B8FE4 /* Meal.swift in Sources */,
+				CA2776CD20B31F9400219410 /* SignUpViewController.swift in Sources */,
 				CA8889D220AF3457006B8FE4 /* MealTableViewController.swift in Sources */,
 				CA8889B820AF283E006B8FE4 /* RatingControl.swift in Sources */,
 				CA8889A120AF1D9F006B8FE4 /* MealViewController.swift in Sources */,
