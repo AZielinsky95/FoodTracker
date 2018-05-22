@@ -22,8 +22,8 @@ class SignUpViewController: UIViewController {
     {
         super.viewDidLoad()
 
-     // UserDefaults.standard.removeObject(forKey: "username")
-     //   UserDefaults.standard.removeObject(forKey: "password")
+      //UserDefaults.standard.removeObject(forKey: "username")
+      //UserDefaults.standard.removeObject(forKey: "password")
       if (hasUserDefaults() == false)
        {
          pageTitle.text = "Sign Up!"

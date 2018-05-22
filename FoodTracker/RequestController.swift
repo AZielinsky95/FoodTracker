@@ -188,12 +188,13 @@ class RequestController {
         let session = URLSession(configuration: sessionConfig, delegate: nil, delegateQueue: nil)
         
         guard let url = URL(string: "https://api.imgur.com/3/image") else { return }
+
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
-        
         // Headers
         
         request.addValue("Client-ID 887c27b7d390539", forHTTPHeaderField: "Authorization")
+        request.addValue("image/jpeg", forHTTPHeaderField: "Content-Type")
         
         let dataImage : Data = UIImagePNGRepresentation(meal.photo!)!
         
@@ -202,6 +203,7 @@ class RequestController {
                 let jsonResult = try! JSONSerialization.jsonObject(with: data!, options: .mutableContainers) as? [String:Any?]
                 let dataKey = jsonResult!["data"] as! [String:Any]
                 let linkURL = dataKey["link"] as! String
+                
                 completion(linkURL)
             }
         }
@@ -255,18 +257,60 @@ class RequestController {
             let id = mealDict!["id"] as! Int
             meal.mealID = String(id)
             
-                uploadRating(meal: meal, completion:
+            uploadImage(meal: meal, completion: { (linkURL) in
+                meal.photoURL = linkURL;
+                
+                uploadPhoto(meal: meal, completion:
                 {
-                    uploadImage(meal: meal, completion: { (linkURL) in
-                        meal.photoURL = linkURL;
-                        
-                        completion();
+                    uploadRating(meal: meal, completion:
+                        {
+                            completion();
                     })
                 })
+            })
         })
         task.resume()
         session.finishTasksAndInvalidate()
     }
+    
+    
+    static func uploadPhoto(meal:Meal,completion: @escaping () -> Void)
+    {
+        let session = URLSession(configuration: sessionConfig, delegate: nil, delegateQueue: nil)
+        
+        guard var URL = URL(string: "https://cloud-tracker.herokuapp.com/users/me/meals/\(meal.mealID!)/photo") else {return}
+        
+        let URLParams = [
+            "imagePath": meal.photoURL!,
+            ]
+        
+        URL = URL.appendingQueryParameters(URLParams)
+        var request = URLRequest(url: URL)
+        request.httpMethod = "POST"
+        
+        // Headers
+        
+        request.addValue(self.token, forHTTPHeaderField: "token")
+        request.addValue("application/json", forHTTPHeaderField: "Content-Type")
+        
+        /* Start a new Task */
+        let task = session.dataTask(with: request, completionHandler: { (data: Data?, response: URLResponse?, error: Error?) -> Void in
+            if (error == nil) {
+                // Success
+                let statusCode = (response as! HTTPURLResponse).statusCode
+                print("URL Session Task Succeeded: HTTP \(statusCode)")
+            }
+            else {
+                // Failure
+                print("URL Session Task Failed: %@", error!.localizedDescription);
+            }
+            
+            completion();
+        })
+        task.resume()
+        session.finishTasksAndInvalidate()
+    }
+
     
     static func uploadRating(meal:Meal, completion: @escaping () -> Void)
     {
